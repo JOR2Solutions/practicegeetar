@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.3.1?dev",
+        "react-dom": "https://esm.sh/react-dom@18.3.1?dev",
+        "react-dom/client": "https://esm.sh/react-dom@18.3.1/client?dev",
+        "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime?dev",
+        "react/jsx-dev-runtime": "https://esm.sh/react@18.3.1/jsx-dev-runtime?dev",
+        "remotion": "https://esm.sh/remotion@4.0.350?external=react,react-dom&dev",
+        "@remotion/player": "https://esm.sh/@remotion/player@4.0.350?external=react,react-dom&dev",
+        "@remotion/gif": "https://esm.sh/@remotion/gif@4.0.350?external=react,react-dom,remotion&dev",
+        "@remotion/transitions": "https://esm.sh/@remotion/transitions@4.0.350?external=react,react-dom,remotion&dev",
+        "@websim/remotion/player": "https://esm.websim.com/@websim/remotion/player"
+      }
+    }
+    </script>
+</head>
+<body>
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" id="close-sidebar-button" class="close-btn">&times;</a>
+        <h2>Slideshow Options</h2>
+        <button id="toggle-play-mode-button" class="roll-button" style="font-size: 18px; padding: 10px 14px; width:100%; margin: 0 15px 12px;">Play Mode (On)</button>
+        <div id="slideshow-options-wrapper">
+            <div id="lesson-container" style="margin-bottom: 20px;">
+                <label for="lesson-select">Lessons:</label>
+                <select id="lesson-select" style="padding: 5px; font-size: 16px; width: 100%;">
+                    <option value="">Select a Lesson</option>
+                    <!-- Options will be populated by JS -->
+                </select>
+            </div>
+            <div id="sidebar-action-buttons" style="margin: 12px 0; display:flex; gap:10px; justify-content:space-between;">
+                <button id="draw-all-button" class="roll-button" style="font-size: 18px; padding: 10px 14px; flex:1;">Draw All</button>
+            </div>
+            <div id="view-options-container" style="margin-bottom: 20px;">
+                <label>View Options:</label>
+                <button id="toggle-details-button" class="roll-button" style="padding: 5px 10px; font-size: 16px;">Show Details</button>
+            </div>
+            <div id="slideshow-mode-toggle-container" style="margin-bottom: 20px;">
+                <label>Slideshow Mode:</label>
+                <button id="toggle-slideshow-mode-button" class="roll-button" style="padding: 5px 10px; font-size: 16px;">Mode: Drawn Cards</button>
+            </div>
+            <div id="slideshow-duration-container">
+                <label for="slideshow-duration">Slide Duration (seconds): </label>
+                <input type="number" id="slideshow-duration" value="30" min="1">
+                <button id="export-gif-button" class="roll-button" style="margin-left: 20px;">Export Slideshow to GIF</button>
+            </div>
+            <div id="fretboard-display-toggle-container" style="margin-bottom: 20px;">
+                <label>Fretboard Display:</label>
+                <button id="toggle-display-mode-button" class="roll-button" style="padding: 5px 10px; font-size: 16px;">Show Note Names</button>
+            </div>
+            <div id="start-fret-filter-container" style="margin-bottom: 20px;">
+                <label>Start Fret Filter:</label>
+                <button id="toggle-start-fret-filter" class="roll-button" style="padding: 5px 10px; font-size: 16px;">Apply Start Fret Filter (Off)</button>
+            </div>
+            <div id="transpose-filter-container" style="margin-bottom: 20px;">
+                <label>Transpose Filter:</label>
+                <button id="toggle-transpose-filter" class="roll-button" style="padding: 5px 10px; font-size: 16px;">Apply Transpose Filter (Off)</button>
+            </div>
+        </div>
+    </div>
+    <div id="container">
+        <header>
+            <button id="hamburger-menu" class="hamburger-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <h1>Practice Generator</h1>
+        </header>
+        <div id="main-controls" style="display: flex; gap: 20px; justify-content: center; margin-bottom: 20px;">
+            <div style="height:48px;"></div>
+        </div>
+        <div id="play-mode-selectors-container">
+             <div class="play-mode-selector-group">
+                <label for="play-mode-key-select">Key:</label>
+                <select id="play-mode-key-select"></select>
+            </div>
+             <div class="play-mode-selector-group">
+                <label for="play-mode-scale-select">Scale:</label>
+                <select id="play-mode-scale-select"></select>
+            </div>
+        </div>
+        <div id="drawn-values-summary" class="collapsed">
+            <!-- Summary display goes here -->
+        </div>
+        <div id="fretboard-area">
+            
+            <h3 id="slideshow-fretboard-title"></h3>
+            <div style="display:flex; align-items:center; justify-content:center; gap:12px;">
+                <h4 id="slideshow-fretboard-value" class="fretboard-value-display"></h4>
+                <div id="slideshow-countdown" aria-live="polite" style="font-weight:bold; color:#333; min-width:60px; text-align:center;"></div>
+            </div>
+            <div class="diagram-pair-container">
+                <div id="slideshow-fretboard-container" class="fretboard-display"></div>
+                <div id="slideshow-piano-container" class="piano-display"></div>
+            </div>
+            
+            <div id="individual-fretboards-wrapper">
+                <h2>Scale</h2>
+                <h3 id="scale-value-display" class="fretboard-value-display"></h3>
+                <div class="diagram-pair-container">
+                    <div id="scale-fretboard-container" class="fretboard-display"></div>
+                    <div id="scale-piano-container" class="piano-display"></div>
+                </div>
+                <h2>Chord</h2>
+                <h3 id="chord-value-display" class="fretboard-value-display"></h3>
+                <div class="diagram-pair-container">
+                    <div id="chord-fretboard-container" class="fretboard-display"></div>
+                    <div id="chord-piano-container" class="piano-display"></div>
+                </div>
+                <h2>Chord 2</h2>
+                <h3 id="chord2-value-display" class="fretboard-value-display"></h3>
+                <div class="diagram-pair-container">
+                    <div id="chord2-fretboard-container" class="fretboard-display"></div>
+                    <div id="chord2-piano-container" class="piano-display"></div>
+                </div>
+                <h2>Triad</h2>
+                <h3 id="triad-value-display" class="fretboard-value-display"></h3>
+                <div class="diagram-pair-container">
+                    <div id="triad-fretboard-container" class="fretboard-display"></div>
+                    <div id="triad-piano-container" class="piano-display"></div>
+                </div>
+                <h2>Triad 2</h2>
+                <h3 id="triad2-value-display" class="fretboard-value-display"></h3>
+                <div class="diagram-pair-container">
+                    <div id="triad2-fretboard-container" class="fretboard-display"></div>
+                    <div id="triad2-piano-container" class="piano-display"></div>
+                </div>
+                <h2>Tetrad</h2>
+                <h3 id="tetrad-value-display" class="fretboard-value-display"></h3>
+                <div class="diagram-pair-container">
+                    <div id="tetrad-fretboard-container" class="fretboard-display"></div>
+                    <div id="tetrad-piano-container" class="piano-display"></div>
+                </div>
+                <h2>Tetrad 2</h2>
+                <h3 id="tetrad2-value-display" class="fretboard-value-display"></h3>
+                <div class="diagram-pair-container">
+                    <div id="tetrad2-fretboard-container" class="fretboard-display"></div>
+                    <div id="tetrad2-piano-container" class="piano-display"></div>
+                </div>
+                <h2>Pentad</h2>
+                <h3 id="pentad-value-display" class="fretboard-value-display"></h3>
+                <div class="diagram-pair-container">
+                    <div id="pentad-fretboard-container" class="fretboard-display"></div>
+                    <div id="pentad-piano-container" class="piano-display"></div>
+                </div>
+                <h2>Pentad 2</h2>
+                <h3 id="pentad2-value-display" class="fretboard-value-display"></h3>
+                <div class="diagram-pair-container">
+                    <div id="pentad2-fretboard-container" class="fretboard-display"></div>
+                    <div id="pentad2-piano-container" class="piano-display"></div>
+                </div>
+                <h2>2-String Set Scale</h2>
+                <h3 id="twostring-value-display" class="fretboard-value-display"></h3>
+                <div class="diagram-pair-container">
+                    <div id="twostring-fretboard-container" class="fretboard-display"></div>
+                    <div id="twostring-piano-container" class="piano-display"></div>
+                </div>
+                <h2>3-String Set Scale</h2>
+                <h3 id="threestring-value-display" class="fretboard-value-display"></h3>
+                <div class="diagram-pair-container">
+                    <div id="threestring-fretboard-container" class="fretboard-display"></div>
+                    <div id="threestring-piano-container" class="piano-display"></div>
+                </div>
+                <h2>4-String Set Scale</h2>
+                <h3 id="fourstring-value-display" class="fretboard-value-display"></h3>
+                <div class="diagram-pair-container">
+                    <div id="fourstring-fretboard-container" class="fretboard-display"></div>
+                    <div id="fourstring-piano-container" class="piano-display"></div>
+                </div>
+                <h2>Interval</h2>
+                <h3 id="interval-value-display" class="fretboard-value-display"></h3>
+                <div class="diagram-pair-container">
+                    <div id="interval-fretboard-container" class="fretboard-display"></div>
+                    <div id="interval-piano-container" class="piano-display"></div>
+                </div>
+                <h2>Interval 2</h2>
+                <h3 id="interval2-value-display" class="fretboard-value-display"></h3>
+                <div class="diagram-pair-container">
+                    <div id="interval2-fretboard-container" class="fretboard-display"></div>
+                    <div id="interval2-piano-container" class="piano-display"></div>
+                </div>
+                <h2>Chord (Within Scale)</h2>
+                <h3 id="scale-chord-value-display" class="fretboard-value-display"></h3>
+                <div class="diagram-pair-container">
+                    <div id="scale-chord-fretboard-container" class="fretboard-display"></div>
+                    <div id="scale-chord-piano-container" class="piano-display"></div>
+                </div>
+                <h2>4-String Set View</h2>
+                <h3 id="fourstring-value-display-2" class="fretboard-value-display"></h3>
+                <div class="diagram-pair-container">
+                    <div id="fourstring-fretboard-container-2" class="fretboard-display"></div>
+                    <div id="fourstring-piano-container-2" class="piano-display"></div>
+                </div>
+                <h2>Circle of Fifths View</h2>
+                <h3 id="cof-value-display" class="fretboard-value-display"></h3>
+                <div id="cof-fretboard-container" class="fretboard-display cof-view"></div>
+            </div>
+        </div>
+        <div id="dice-wrapper">
+            <div class="die-group">
+                <h2>Note Dice (Diatonic)</h2>
+                <div id="die1" class="die">?</div>
+                <button id="roll-button-1" class="roll-button">Roll</button>
+            </div>
+            <div class="die-group">
+                <h2>Note Dice (Chromatic)</h2>
+                <div id="die2" class="die">?</div>
+                <button id="roll-button-2" class="roll-button">Roll</button>
+            </div>
+            <div class="die-group" data-dependency="scale">
+                <h2>Interval Dice</h2>
+                <div id="die3" class="die">?</div>
+                <button id="roll-button-3" class="roll-button">Roll</button>
+            </div>
+            <div class="die-group" data-dependency="scale">
+                <h2>Interval Cards 2</h2>
+                <div id="card-interval2" class="card">?</div>
+                <button id="draw-button-interval2" class="roll-button">Draw Card</button>
+            </div>
+            <div class="die-group">
+                <h2>Number of Measures</h2>
+                <div id="die4" class="die">?</div>
+                <button id="roll-button-4" class="roll-button">Roll</button>
+            </div>
+            <div class="die-group" data-dependency="scale">
+                <h2>Chord Cards</h2>
+                <div id="card1" class="card card-small-text">?</div>
+                <button id="draw-button-1" class="roll-button">Draw Card</button>
+            </div>
+            <div class="die-group" data-dependency="scale">
+                <h2>Chord Cards 2</h2>
+                <div id="card-chord2" class="card card-small-text">?</div>
+                <button id="draw-button-chord2" class="roll-button">Draw Card</button>
+            </div>
+            <div class="die-group">
+                <h2>Scale Cards</h2>
+                <div id="card2" class="card card-extra-small-text">?</div>
+                <button id="draw-button-2" class="roll-button">Draw Card</button>
+                <button id="clear-scale-button" class="roll-button" style="display: none; background-color: #f44336; margin-top: 10px;">Clear Scale</button>
+            </div>
+            <div class="die-group" data-dependency="scale">
+                <h2>Triad Cards</h2>
+                <div id="card3" class="card card-small-text">?</div>
+                <button id="draw-button-3" class="roll-button">Draw Card</button>
+            </div>
+            <div class="die-group" data-dependency="scale">
+                <h2>Triad Cards 2</h2>
+                <div id="card-triad2" class="card card-small-text">?</div>
+                <button id="draw-button-triad2" class="roll-button">Draw Card</button>
+            </div>
+            <div class="die-group" data-dependency="scale">
+                <h2>Tetrad Cards</h2>
+                <div id="card4" class="card card-small-text">?</div>
+                <button id="draw-button-4" class="roll-button">Draw Card</button>
+            </div>
+            <div class="die-group" data-dependency="scale">
+                <h2>Tetrad Cards 2</h2>
+                <div id="card-tetrad2" class="card card-small-text">?</div>
+                <button id="draw-button-tetrad2" class="roll-button">Draw Card</button>
+            </div>
+            <div class="die-group" data-dependency="scale">
+                <h2>Pentad Cards</h2>
+                <div id="card5" class="card card-extra-small-text">?</div>
+                <button id="draw-button-5" class="roll-button">Draw Card</button>
+            </div>
+            <div class="die-group" data-dependency="scale">
+                <h2>Pentad Cards 2</h2>
+                <div id="card-pentad2" class="card card-extra-small-text">?</div>
+                <button id="draw-button-pentad2" class="roll-button">Draw Card</button>
+            </div>
+            <div class="die-group">
+                <h2>Transpose Cards</h2>
+                <div id="card6" class="card">?</div>
+                <button id="draw-button-6" class="roll-button">Draw Card</button>
+            </div>
+            <div class="die-group" data-dependency="scale">
+                <h2>Assorted Melodic Patterns</h2>
+                <div id="card7" class="card card-small-text">?</div>
+                <button id="draw-button-7" class="roll-button">Draw Card</button>
+            </div>
+            <div class="die-group" data-dependency="scale">
+                <h2>3-Note Melodic Patterns</h2>
+                <div id="card8" class="card card-small-text">?</div>
+                <button id="draw-button-8" class="roll-button">Draw Card</button>
+            </div>
+            <div class="die-group" data-dependency="scale">
+                <h2>4-Note Melodic Patterns</h2>
+                <div id="card9" class="card card-small-text">?</div>
+                <button id="draw-button-9" class="roll-button">Draw Card</button>
+            </div>
+            <div class="die-group">
+                <h2>Start Fret</h2>
+                <div id="die5" class="die">?</div>
+                <button id="roll-button-5" class="roll-button">Roll</button>
+            </div>
+            <div class="die-group">
+                <h2>2-String Sets</h2>
+                <div id="card10" class="card card-small-text">?</div>
+                <button id="draw-button-10" class="roll-button">Draw Card</button>
+            </div>
+            <div class="die-group">
+                <h2>3-String Sets</h2>
+                <div id="card11" class="card card-small-text">?</div>
+                <button id="draw-button-11" class="roll-button">Draw Card</button>
+            </div>
+            <div class="die-group">
+                <h2>4-String Sets</h2>
+                <div id="card13" class="card card-small-text">?</div>
+                <button id="draw-button-13" class="roll-button">Draw Card</button>
+            </div>
+            <div class="die-group" data-dependency="scale">
+                <h2>Chord Progressions</h2>
+                <div id="card12" class="card card-small-text">?</div>
+                <button id="draw-button-12" class="roll-button">Draw Card</button>
+            </div>
+            <div class="die-group" data-dependency="scale">
+                <h2>Circle of Fifths</h2>
+                <div id="card-cof" class="card card-small-text">?</div>
+                <button id="draw-button-cof" class="roll-button">View CoF</button>
+            </div>
+        </div>
+    </div>
+    <div id="dropdown-overlay" style="display: none;">
+        <div id="dropdown-content">
+            <h3 id="dropdown-title">Select Value</h3>
+            <div id="dropdown-list"></div>
+            <button id="dropdown-close-button">Close</button>
+        </div>
+    </div>
+    <div id="remotion-overlay" style="display: none;">
+        <div id="remotion-content">
+            <h3 id="remotion-title">Export Slideshow to GIF</h3>
+            <div id="remotion-player-container"></div>
+            <button id="remotion-close-button">Close</button>
+        </div>
+    </div>
+    <script type="module" src="script.js"></script>
+</body>
+</html>

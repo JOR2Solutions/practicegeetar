@@ -1,0 +1,845 @@
+body {
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+    margin: 0;
+    transition: margin-left .5s;
+    padding: 20px 0;
+    box-sizing: border-box;
+}
+
+#container {
+    text-align: center;
+    width: 100%;
+    max-width: 1400px;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.hamburger-menu {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1002;
+}
+
+.hamburger-menu span {
+    display: block;
+    width: 30px;
+    height: 3px;
+    background-color: #333;
+    margin: 6px 0;
+    transition: 0.4s;
+}
+
+.sidebar {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1001;
+    top: 0;
+    left: 0;
+    background-color: #f8f8f8;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.sidebar.open {
+    width: 300px;
+}
+
+.sidebar h2 {
+    padding: 0 15px 15px 15px;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 20px;
+    font-size: 22px;
+}
+
+#slideshow-options-wrapper {
+    padding: 0 15px;
+}
+#slideshow-options-wrapper > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.sidebar .close-btn {
+    position: absolute;
+    top: 0;
+    right: 15px;
+    font-size: 36px;
+    text-decoration: none;
+    color: #818181;
+    transition: 0.3s;
+}
+
+.sidebar .close-btn:hover {
+    color: #333;
+}
+
+body.sidebar-open {
+    background-color: rgba(0,0,0,0.1);
+}
+
+body.sidebar-open #container {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+h1 {
+    color: #333;
+}
+
+#fretboard-area {
+    text-align: center;
+    margin: 30px auto;
+}
+
+#slideshow-duration-container {
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+#slideshow-duration {
+    padding: 5px;
+    font-size: 16px;
+    width: 60px;
+}
+#slideshow-fretboard-title {
+    margin-top: 20px;
+    margin-bottom: 5px;
+    min-height: 24px; /* To prevent layout shift when text changes */
+}
+
+#slideshow-fretboard-value {
+    margin-top: 0;
+    font-size: 1.1em;
+    font-weight: normal;
+    min-height: 21px;
+}
+
+.diagram-pair-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    margin-bottom: 30px;
+}
+
+.fretboard-value-display {
+    margin-top: -10px;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    font-weight: normal;
+    color: #555;
+    min-height: 21px;
+}
+
+.fretboard-display {
+    margin: 0; /* Remove default margins */
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    width: fit-content;
+    overflow-x: auto;
+}
+
+.piano-display {
+    margin: 0;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    width: fit-content;
+    height: fit-content;
+}
+
+.piano-keyboard {
+    position: relative;
+    display: flex;
+    height: 180px; /* Adjust height as needed */
+}
+
+.white-key, .black-key {
+    position: relative;
+    border: 1px solid #333;
+    box-sizing: border-box;
+}
+
+.white-key {
+    width: 30px;
+    height: 100%;
+    background-color: white;
+    z-index: 1;
+}
+
+.black-key {
+    width: 20px;
+    height: 60%;
+    background-color: #333;
+    position: absolute;
+    top: 0;
+    z-index: 2;
+}
+
+/* Remove class-based positioning for black keys */
+/*
+.black-key.cs { left: 20px; }
+.black-key.ds { left: 50px; }
+.black-key.fs { left: 110px; }
+.black-key.gs { left: 140px; }
+.black-key.as { left: 170px; }
+*/
+
+.key-note-marker {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+.fretboard-diagram {
+    display: table;
+    border-spacing: 0;
+    background: linear-gradient(to right, #f5d6ab, #c7a57a);
+    border: 2px solid #4a2c2a;
+    border-radius: 5px;
+}
+
+.string {
+    display: table-row;
+}
+
+.fret {
+    display: table-cell;
+    min-width: 60px;
+    height: 35px;
+    border-right: 2px solid #888;
+    position: relative;
+    box-sizing: border-box;
+}
+
+/* .fret:first-child styling is removed as it breaks flexible fretboards (e.g., COF view) 
+   and is now handled explicitly in fretboard-viz.js for the nut. */
+
+.fret > span { /* Fret wire */
+    position: absolute;
+    height: 100%;
+    width: 1px;
+    background-color: #ccc;
+    right: 0px;
+    top: 0;
+    z-index: 1;
+}
+
+.string-line {
+    position: absolute;
+    width: 100%;
+    background-color: #666;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+}
+.string:nth-child(1) .string-line { height: 1px; }
+.string:nth-child(2) .string-line { height: 1.5px; }
+.string:nth-child(3) .string-line { height: 2px; }
+.string:nth-child(4) .string-line { height: 2px; }
+.string:nth-child(5) .string-line { height: 3px; }
+.string:nth-child(6) .string-line { height: 3px; }
+
+.fret-dot {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background-color: #333;
+    border-radius: 50%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    opacity: 0.6;
+}
+
+.note-marker {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background-color: #333;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 3;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+.note-marker.root {
+    background-color: #d32f2f;
+}
+
+.fret-numbers {
+    display: table-caption;
+    caption-side: bottom;
+    padding: 5px 0;
+    font-weight: bold;
+}
+
+.fret-numbers > div {
+    display: table;
+    width: 100%;
+}
+
+.fret-numbers > div > span {
+    display: table-cell;
+    min-width: 60px;
+    text-align: center;
+}
+/* .fret-numbers > div > span:first-child styling is removed and handled in JS */
+
+/* Styles for Remotion player overlay */
+#remotion-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001; /* Higher than dropdown */
+}
+
+#remotion-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 90%;
+    max-height: 90%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+#remotion-title {
+    margin-top: 0;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+#remotion-player-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#remotion-close-button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    background-color: #f44336;
+    color: white;
+    transition: background-color 0.2s;
+    align-self: center;
+}
+
+#remotion-close-button:hover {
+    background-color: #d32f2f;
+}
+
+/* DEMO MODE STYLES */
+body.demo-mode-active #dice-wrapper,
+body.demo-mode-active #drawn-values-summary,
+body.demo-mode-active #slideshow-options-wrapper,
+body.demo-mode-active #individual-fretboards-wrapper {
+    display: none !important;
+}
+
+body.demo-mode-active #main-controls {
+    margin-bottom: 0 !important;
+}
+
+/* End DEMO MODE STYLES */
+
+/* PLAY MODE STYLES */
+body.play-mode-active #dice-wrapper,
+body.play-mode-active #drawn-values-summary,
+body.play-mode-active #slideshow-options-wrapper,
+body.play-mode-active #individual-fretboards-wrapper {
+    display: none !important;
+}
+
+body.play-mode-active #main-controls {
+    margin-bottom: 0 !important;
+}
+
+body.play-mode-active #play-mode-selectors-container {
+    display: flex;
+}
+
+/* End PLAY MODE STYLES */
+
+/* Play mode selectors styles */
+#play-mode-selectors-container {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.play-mode-selector-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.play-mode-selector-group label {
+    font-size: 16px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+.play-mode-selector-group select {
+    padding: 8px 12px;
+    font-size: 18px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    min-width: 250px;
+}
+
+/* NEW: For showing/hiding individual diagrams and dice */
+body.details-hidden #individual-fretboards-wrapper,
+body.details-hidden #dice-wrapper {
+    display: none;
+}
+
+#dice-wrapper {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    align-items: stretch;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.die-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.die-group.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    background-color: #e0e0e0;
+}
+
+.die-group h2 {
+    font-size: 24px;
+    color: #444;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+#die-container {
+    margin: 20px 0;
+    perspective: 1000px;
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+}
+
+.die {
+    width: 150px;
+    height: 150px;
+    background-color: #fff;
+    border: 2px solid #333;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 80px;
+    font-weight: bold;
+    color: #333;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease-out;
+}
+
+.card {
+    width: 120px;
+    height: 180px;
+    background-color: #fff;
+    border: 2px solid #333;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    font-weight: bold;
+    color: #333;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
+    transition: transform 0.5s;
+    transform-style: preserve-3d;
+    padding: 10px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.card span {
+    display: block;
+}
+
+.card-name {
+    font-size: 1em;
+    font-weight: bold;
+    color: #0056b3;
+    margin-right: 5px;
+}
+
+.card-intervals {
+    font-size: 0.6em;
+    font-weight: normal;
+    margin-top: 8px;
+}
+
+.card-chords {
+    font-size: 0.5em;
+    font-weight: normal;
+    margin-top: 4px;
+    line-height: 1.2;
+}
+
+.card-small-text {
+    font-size: 24px;
+}
+
+.card-extra-small-text {
+    font-size: 18px;
+}
+
+#die2 {
+    font-size: 40px;
+}
+
+#die3 {
+    font-size: 60px;
+}
+
+#die4 {
+    font-size: 60px;
+}
+
+#die5 {
+    font-size: 60px;
+}
+
+.roll-button {
+    padding: 10px 20px;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 10px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.roll-button:hover {
+    background-color: #45a049;
+}
+
+.roll-button:active {
+    transform: translateY(2px);
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+#drawn-values-summary {
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #e8e8ff; /* Light color background */
+    border: 1px solid #aaa;
+    border-radius: 10px;
+    text-align: left;
+    max-width: 1000px; /* Limit width */
+}
+
+#drawn-values-summary h2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0;
+    color: #333;
+    border-bottom: 2px solid #aaa;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+#drawn-values-summary.collapsed #summary-header {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.summary-toggle-icon {
+    font-size: 1.5em;
+    user-select: none;
+}
+
+.drawn-value-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-start;
+}
+
+/* Add collapsing styles */
+.summary-content {
+    max-height: 1000px; 
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out;
+}
+
+#drawn-values-summary.collapsed .summary-content {
+    max-height: 0;
+}
+
+.drawn-value-item {
+    background-color: #fff;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+
+.drawn-value-item:hover {
+    background-color: #f0f0ff; /* Light hover effect */
+}
+
+.drawn-value-item.highlighted {
+    background-color: #d1e7ff; /* A light blue color */
+    border-color: #0d6efd;
+}
+
+.drawn-value-item strong {
+    font-weight: bold;
+    color: #0056b3;
+    margin-right: 5px;
+}
+
+.drawn-value-item.empty {
+    color: #999;
+}
+
+/* New styles for COF visualization */
+.fretboard-display.cof-view {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 1200px;
+    overflow: hidden; 
+    padding: 10px;
+    margin: 0; /* Remove default margin */
+}
+
+.cof-item-wrapper {
+    /* Container for scaled fretboard and title */
+    width: 300px; /* Increased width for both diagrams */
+    height: auto; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    box-sizing: border-box;
+    padding-top: 20px;
+    gap: 5px; /* Space between title and diagrams */
+}
+
+.cof-item-title {
+    font-weight: bold;
+    font-size: 14px;
+    position: static; /* No longer absolute */
+    transform: none;
+    z-index: 4;
+    white-space: nowrap;
+    margin-bottom: 5px;
+}
+
+.cof-diagram-pair {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.fretboard-container-small {
+    position: relative; /* No longer absolute */
+    top: 0;
+    left: 0;
+    transform: translateX(0) scale(0.45);
+    transform-origin: top center;
+}
+
+.piano-container-small {
+    transform: scale(0.6);
+    transform-origin: top center;
+}
+
+/* Animation for drawing card */
+.flipping {
+    transform: rotateY(180deg);
+}
+
+/* Animation for rolling */
+.rolling {
+    animation: roll 0.5s ease-in-out;
+}
+
+@keyframes roll {
+    0% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(90deg) scale(0.8); }
+    50% { transform: rotate(180deg) scale(1.1); }
+    75% { transform: rotate(270deg) scale(0.8); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+/* New styles for interactive dropdown/modal */
+
+#dropdown-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#dropdown-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 90%;
+    max-height: 80%;
+    overflow-y: auto;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    min-width: 300px;
+}
+
+#dropdown-title {
+    margin-top: 0;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+#dropdown-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.dropdown-item {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    background-color: #f9f9f9;
+    transition: background-color 0.1s;
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+.dropdown-item:hover {
+    background-color: #e0e0ff;
+    border-color: #0056b3;
+}
+
+.dropdown-item.selected {
+    background-color: #007bff;
+    color: white;
+    border-color: #0056b3;
+    font-weight: bold;
+}
+
+#dropdown-close-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    background-color: #f44336;
+    color: white;
+    transition: background-color 0.2s;
+}
+
+#dropdown-close-button:hover {
+    background-color: #d32f2f;
+}
