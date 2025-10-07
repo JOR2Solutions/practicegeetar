@@ -26,7 +26,6 @@
     <div id="sidebar" class="sidebar">
         <a href="javascript:void(0)" id="close-sidebar-button" class="close-btn">&times;</a>
         <h2>Slideshow Options</h2>
-        <button id="toggle-play-mode-button" class="roll-button" style="font-size: 18px; padding: 10px 14px; width:100%; margin: 0 15px 12px;">Play Mode (On)</button>
         <div id="slideshow-options-wrapper">
             <div id="lesson-container" style="margin-bottom: 20px;">
                 <label for="lesson-select">Lessons:</label>
@@ -34,9 +33,6 @@
                     <option value="">Select a Lesson</option>
                     <!-- Options will be populated by JS -->
                 </select>
-            </div>
-            <div id="sidebar-action-buttons" style="margin: 12px 0; display:flex; gap:10px; justify-content:space-between;">
-                <button id="draw-all-button" class="roll-button" style="font-size: 18px; padding: 10px 14px; flex:1;">Draw All</button>
             </div>
             <div id="view-options-container" style="margin-bottom: 20px;">
                 <label>View Options:</label>
@@ -75,7 +71,8 @@
             <h1>Practice Generator</h1>
         </header>
         <div id="main-controls" style="display: flex; gap: 20px; justify-content: center; margin-bottom: 20px;">
-            <div style="height:48px;"></div>
+            <button id="draw-all-button" class="roll-button" style="font-size: 24px; padding: 15px 30px;">Draw All</button>
+            <button id="toggle-play-mode-button" class="roll-button" style="font-size: 24px; padding: 15px 30px;">Play Mode (On)</button>
         </div>
         <div id="play-mode-selectors-container">
              <div class="play-mode-selector-group">
