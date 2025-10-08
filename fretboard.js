@@ -294,25 +294,31 @@ export function updateDependentElements() {
 }
 
 export function initFretboards() {
-    createFretboard(dom.scaleFretboardContainer, 'fretboard-scale');
-    createFretboard(dom.chordFretboardContainer, 'fretboard-chord');
-    createFretboard(dom.chord2FretboardContainer, 'fretboard-chord2');
-    createFretboard(dom.triadFretboardContainer, 'fretboard-triad');
-    createFretboard(dom.triad2FretboardContainer, 'fretboard-triad2');
-    createFretboard(dom.tetradFretboardContainer, 'fretboard-tetrad');
-    createFretboard(dom.tetrad2FretboardContainer, 'fretboard-tetrad2');
-    createFretboard(dom.pentadFretboardContainer, 'fretboard-pentad');
-    createFretboard(dom.pentad2FretboardContainer, 'fretboard-pentad2');
-    createFretboard(dom.twostringFretboardContainer, 'fretboard-twostring');
-    createFretboard(dom.threestringFretboardContainer, 'fretboard-threestring');
-    createFretboard(dom.fourstringFretboardContainer, 'fretboard-fourstring');
-    createFretboard(dom.intervalFretboardContainer, 'fretboard-interval');
-    createFretboard(dom.interval2FretboardContainer, 'fretboard-interval2');
-    createFretboard(dom.scaleChordFretboardContainer, 'fretboard-scale-chord');
-    createFretboard(dom.fourstringFretboardContainer2, 'fretboard-fourstring-2');
+    // Use current start/end frets from state to initialize visible fret range
+    const { currentStartFret, currentEndFret } = getState();
+    const startFret = (typeof currentStartFret === 'number') ? currentStartFret : 0;
+    const endFret = (typeof currentEndFret === 'number') ? currentEndFret : NUM_FRETS;
+    const numVisible = Math.max(1, endFret - startFret);
 
+    createFretboard(dom.scaleFretboardContainer, 'fretboard-scale', numVisible, startFret);
+    createFretboard(dom.chordFretboardContainer, 'fretboard-chord', numVisible, startFret);
+    createFretboard(dom.chord2FretboardContainer, 'fretboard-chord2', numVisible, startFret);
+    createFretboard(dom.triadFretboardContainer, 'fretboard-triad', numVisible, startFret);
+    createFretboard(dom.triad2FretboardContainer, 'fretboard-triad2', numVisible, startFret);
+    createFretboard(dom.tetradFretboardContainer, 'fretboard-tetrad', numVisible, startFret);
+    createFretboard(dom.tetrad2FretboardContainer, 'fretboard-tetrad2', numVisible, startFret);
+    createFretboard(dom.pentadFretboardContainer, 'fretboard-pentad', numVisible, startFret);
+    createFretboard(dom.pentad2FretboardContainer, 'fretboard-pentad2', numVisible, startFret);
+    createFretboard(dom.twostringFretboardContainer, 'fretboard-twostring', numVisible, startFret);
+    createFretboard(dom.threestringFretboardContainer, 'fretboard-threestring', numVisible, startFret);
+    createFretboard(dom.fourstringFretboardContainer, 'fretboard-fourstring', numVisible, startFret);
+    createFretboard(dom.intervalFretboardContainer, 'fretboard-interval', numVisible, startFret);
+    createFretboard(dom.interval2FretboardContainer, 'fretboard-interval2', numVisible, startFret);
+    createFretboard(dom.scaleChordFretboardContainer, 'fretboard-scale-chord', numVisible, startFret);
+    createFretboard(dom.fourstringFretboardContainer2, 'fretboard-fourstring-2', numVisible, startFret);
+    
     // Initialize the main slideshow container structure
-    createFretboard(dom.slideshowFretboardContainer, 'fretboard-slideshow');
+    createFretboard(dom.slideshowFretboardContainer, 'fretboard-slideshow', numVisible, startFret);
     
     // Initialize Pianos
     createPiano(dom.scalePianoContainer, 'piano-scale');

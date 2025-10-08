@@ -228,7 +228,37 @@ function initializeEventListeners() {
     // Play Mode selector listeners
     dom.playModeKeySelect.addEventListener('change', handlePlayModeSelectionChange);
     dom.playModeScaleSelect.addEventListener('change', handlePlayModeSelectionChange);
-    
+
+    // Fret range inputs (Start / End) next to Lessons dropdown
+    if (dom.fretRangeStartInput && dom.fretRangeEndInput) {
+        const clampFretValues = () => {
+            let startVal = parseInt(dom.fretRangeStartInput.value, 10);
+            let endVal = parseInt(dom.fretRangeEndInput.value, 10);
+            if (isNaN(startVal)) startVal = 0;
+            if (isNaN(endVal)) endVal = 15;
+            if (startVal < 0) startVal = 0;
+            if (endVal < 1) endVal = Math.max(1, startVal + 1);
+            if (endVal <= startVal) endVal = startVal + 1;
+            // Limit to reasonable maximum (24)
+            startVal = Math.min(24, startVal);
+            endVal = Math.min(24, endVal);
+            dom.fretRangeStartInput.value = startVal;
+            dom.fretRangeEndInput.value = endVal;
+            return { startVal, endVal };
+        };
+
+        const applyFretRange = () => {
+            const { startVal, endVal } = clampFretValues();
+            updateState({ currentStartFret: startVal, currentEndFret: endVal });
+            // Recreate fretboards to match new range and redraw
+            initFretboards();
+            updateFretboards();
+        };
+
+        dom.fretRangeStartInput.addEventListener('change', applyFretRange);
+        dom.fretRangeEndInput.addEventListener('change', applyFretRange);
+    }
+
     // Sync duration inputs
     const syncDurationInputs = (source, target) => {
         target.value = source.value;
@@ -493,6 +523,10 @@ document.addEventListener('DOMContentLoaded', async () => {
              updateIntroToggleUI(isExpanded);
          });
     }
+
+    // Set initial Start/End fret input values from state
+    if (dom.fretRangeStartInput) dom.fretRangeStartInput.value = (getState().currentStartFret !== null) ? getState().currentStartFret : 0;
+    if (dom.fretRangeEndInput) dom.fretRangeEndInput.value = (getState().currentEndFret !== null) ? getState().currentEndFret : 15;
 
     // Load default C Major scale and draw all dependent cards
     await loadDefaultsAndDraw();

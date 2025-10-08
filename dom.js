@@ -153,3 +153,7 @@ export const toggleDetailsButton = document.getElementById('toggle-details-butto
 
 // New dropdown for lessons
 export const lessonSelect = document.getElementById('lesson-select');
+
+// New fret range inputs (next to lessons dropdown)
+export const fretRangeStartInput = document.getElementById('fret-range-start');
+export const fretRangeEndInput = document.getElementById('fret-range-end');

@@ -192,7 +192,6 @@ export function stopSlideshow() {
     stopSlideshowInterval();
     currentSlideIndex = 0;
     updateState({ cofSlideshowIndex: 0 });
-    updateSlideshowView();
 }
 
 export function nextSlide() {

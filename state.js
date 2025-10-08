@@ -17,6 +17,7 @@ let state = {
     currentInterval2: null,
     fretboardDisplayMode: 'intervals', // 'intervals' or 'notes'
     currentStartFret: null,
+    currentEndFret: 15,
     isStartFretFilterActive: false,
     currentTranspositionValue: null,
     isTransposeFilterActive: false,
@@ -77,6 +78,7 @@ export function resetAllState() {
         currentInterval2: null,
         fretboardDisplayMode: 'intervals',
         currentStartFret: null,
+        currentEndFret: 15,
         isStartFretFilterActive: false,
         currentTranspositionValue: null,
         isTransposeFilterActive: false,
