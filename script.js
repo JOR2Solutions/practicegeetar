@@ -5,7 +5,7 @@ import { initSummary, closeDropdown, handleDropdownOverlayClick, updateDrawnValu
 import { rollDie, drawCard, drawScaleCard, clearScale, drawAll, handleCofView, redrawDependentOnScale } from './actions.js';
 import { getState, updateState, resetDependentState } from './state.js';
 import { initSlideshow, slideSources, getSlideshowData, toggleSlideshowMode, playSlideshow, pauseSlideshow, stopSlideshow, nextSlide, previousSlide, rerandomizeAll } from './slideshow.js';
-import { renderGifExporter } from './gif-exporter.jsx';
+// GIF exporter removed
 import { delay } from './utils.js';
 
 export function updateTransposeFilterButtonText() {
@@ -181,14 +181,7 @@ function initializeEventListeners() {
     dom.clearScaleButton.addEventListener('click', clearScale);
     dom.drawAllButton.addEventListener('click', drawAll);
 
-    dom.exportGifButton.addEventListener('click', () => {
-        const data = getSlideshowData();
-        if (data.slides.length > 0) {
-            renderGifExporter(data);
-        } else {
-            alert('No content to export. Please draw some values first.');
-        }
-    });
+    // Export to GIF feature removed
 
     dom.toggleDisplayModeButton.addEventListener('click', toggleFretboardDisplayMode);
     dom.toggleStartFretFilterButton.addEventListener('click', toggleStartFretFilter);

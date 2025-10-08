@@ -126,7 +126,7 @@ export const slideshowFretboardContainer = document.getElementById('slideshow-fr
 export const slideshowFretboardTitle = document.getElementById('slideshow-fretboard-title');
 export const slideshowFretboardValue = document.getElementById('slideshow-fretboard-value');
 export const slideshowDurationInput = document.getElementById('slideshow-duration');
-export const exportGifButton = document.getElementById('export-gif-button');
+// exportGifButton removed
 
 // New DOM references for the selector modal
 export const dropdownOverlay = document.getElementById('dropdown-overlay');
@@ -134,10 +134,7 @@ export const dropdownTitle = document.getElementById('dropdown-title');
 export const dropdownList = document.getElementById('dropdown-list');
 export const dropdownCloseButton = document.getElementById('dropdown-close-button');
 
-// Remotion player elements
-export const remotionOverlay = document.getElementById('remotion-overlay');
-export const remotionPlayerContainer = document.getElementById('remotion-player-container');
-export const remotionCloseButton = document.getElementById('remotion-close-button');
+// Remotion exporter removed
 
 export const dependentElements = document.querySelectorAll('[data-dependency="scale"]');
 
