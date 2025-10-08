@@ -85,7 +85,7 @@
                 <span></span>
                 <span></span>
             </button>
-            <h1>JUST PLAY!!!</h1>
+            <h1>STFU&Play!!!</h1>
         </header>
 
         <!-- Fretboard Area -->
@@ -96,8 +96,13 @@
                 <div id="slideshow-countdown" aria-live="polite" style="font-weight:bold; color:#333; min-width:60px; text-align:center;"></div>
             </div>
             
-            <!-- Slideshow Playback Controls -->
-            <div id="slideshow-controls" style="display:flex; justify-content:center; gap:10px; margin-bottom:20px;">
+            <div class="diagram-pair-container">
+                <div id="slideshow-fretboard-container" class="fretboard-display"></div>
+                <div id="slideshow-piano-container" class="piano-display"></div>
+            </div>
+
+            <!-- Moved Slideshow Playback Controls: now under the piano diagram -->
+            <div id="slideshow-controls" style="display:flex; justify-content:center; gap:10px; margin-top:12px; margin-bottom:20px;">
                 <button id="slideshow-stop-button" class="slideshow-control-button" title="Stop">⏹</button>
                 <button id="slideshow-back-button" class="slideshow-control-button" title="Previous Slide">⏮</button>
                 <button id="slideshow-play-button" class="slideshow-control-button" title="Play">▶</button>
@@ -107,10 +112,7 @@
                 <button id="toggle-slideshow-mode-button-playmode" class="slideshow-control-button" title="Slideshow Mode" style="display:none;">Mode</button>
             </div>
             
-            <div class="diagram-pair-container">
-                <div id="slideshow-fretboard-container" class="fretboard-display"></div>
-                <div id="slideshow-piano-container" class="piano-display"></div>
-            </div>
+            <!-- duplicate diagram-pair removed to prevent ghost spacing under controls -->
             
             <!-- Individual Fretboards -->
             <div id="individual-fretboards-wrapper">
