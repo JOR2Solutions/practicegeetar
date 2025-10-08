@@ -33,16 +33,16 @@ header {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 10px;
+    padding: 6px; /* reduced padding to match smaller icon */
     z-index: 1002;
 }
 
 .hamburger-menu span {
     display: block;
-    width: 30px;
-    height: 3px;
+    width: 15px; /* half of 30px */
+    height: 1.5px; /* half of 3px */
     background-color: #333;
-    margin: 6px 0;
+    margin: 3px 0; /* half of 6px */
     transition: 0.4s;
 }
 
@@ -442,25 +442,28 @@ body.play-mode-active #toggle-slideshow-mode-button-playmode {
 }
 
 .play-mode-selector-group {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    transform: scale(0.5);
+    transform-origin: top left;
+    margin-right: 12px; /* keep spacing when scaled */
 }
 
-.play-mode-selector-group label {
-    font-size: 16px;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #333;
+/* Make sure selects/inputs remain usable when scaled */
+#play-mode-selectors-container {
+    gap: 18px; /* slightly reduced gap to compensate scale */
 }
 
+/* Ensure the inline style on the duration input doesn't override the small size */
+#play-mode-slide-duration {
+    width: 40px !important;
+    padding: 6px 8px !important;
+    font-size: 12px !important;
+}
+
+/* Reduce minimum width of selects to fit scaled layout */
 .play-mode-selector-group select {
-    padding: 8px 12px;
-    font-size: 18px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    min-width: 250px;
+    min-width: 140px;
+    font-size: 12px;
+    padding: 6px 8px;
 }
 
 /* NEW: For showing/hiding individual diagrams and dice */
@@ -619,8 +622,8 @@ body.details-hidden #dice-wrapper {
 }
 
 .slideshow-control-button {
-    padding: 12px 18px;
-    font-size: 20px;
+    padding: 6px 9px;
+    font-size: 10px;
     cursor: pointer;
     border-radius: 8px;
     border: none;
@@ -628,7 +631,7 @@ body.details-hidden #dice-wrapper {
     color: white;
     box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
     transition: background-color 0.2s, transform 0.1s;
-    min-width: 50px;
+    min-width: 25px;
 }
 
 .slideshow-control-button:hover {
