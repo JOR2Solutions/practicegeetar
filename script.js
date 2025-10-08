@@ -4,7 +4,7 @@ import { initFretboards, updateDependentElements, updateFretboardValueDisplays, 
 import { initSummary, closeDropdown, handleDropdownOverlayClick, updateDrawnValuesDisplay } from './summary.js';
 import { rollDie, drawCard, drawScaleCard, clearScale, drawAll, handleCofView, redrawDependentOnScale } from './actions.js';
 import { getState, updateState, resetDependentState } from './state.js';
-import { initSlideshow, slideSources, getSlideshowData, toggleSlideshowMode } from './slideshow.js';
+import { initSlideshow, slideSources, getSlideshowData, toggleSlideshowMode, playSlideshow, pauseSlideshow, stopSlideshow, nextSlide, previousSlide, rerandomizeAll } from './slideshow.js';
 import { renderGifExporter } from './gif-exporter.jsx';
 import { delay } from './utils.js';
 
@@ -197,6 +197,27 @@ function initializeEventListeners() {
     dom.toggleDetailsButton.addEventListener('click', toggleDetailsVisibility);
     dom.toggleSlideshowModeButton.addEventListener('click', toggleSlideshowMode); // New listener
     
+    // Add listener for the play mode slideshow button
+    const toggleSlideshowModeButtonPlaymode = document.getElementById('toggle-slideshow-mode-button-playmode');
+    if (toggleSlideshowModeButtonPlaymode) {
+        toggleSlideshowModeButtonPlaymode.addEventListener('click', toggleSlideshowMode);
+    }
+    
+    // Slideshow playback controls
+    const playButton = document.getElementById('slideshow-play-button');
+    const pauseButton = document.getElementById('slideshow-pause-button');
+    const stopButton = document.getElementById('slideshow-stop-button');
+    const backButton = document.getElementById('slideshow-back-button');
+    const forwardButton = document.getElementById('slideshow-forward-button');
+    const rerandomizeButton = document.getElementById('slideshow-rerandomize-button');
+    
+    if (playButton) playButton.addEventListener('click', playSlideshow);
+    if (pauseButton) pauseButton.addEventListener('click', pauseSlideshow);
+    if (stopButton) stopButton.addEventListener('click', stopSlideshow);
+    if (backButton) backButton.addEventListener('click', previousSlide);
+    if (forwardButton) forwardButton.addEventListener('click', nextSlide);
+    if (rerandomizeButton) rerandomizeButton.addEventListener('click', rerandomizeAll);
+    
     // New listener for Play Mode
     dom.togglePlayModeButton.addEventListener('click', togglePlayMode);
 
@@ -214,6 +235,13 @@ function initializeEventListeners() {
     // Play Mode selector listeners
     dom.playModeKeySelect.addEventListener('change', handlePlayModeSelectionChange);
     dom.playModeScaleSelect.addEventListener('change', handlePlayModeSelectionChange);
+    
+    // Sync duration inputs
+    const syncDurationInputs = (source, target) => {
+        target.value = source.value;
+    };
+    dom.slideshowDurationInput.addEventListener('input', () => syncDurationInputs(dom.slideshowDurationInput, dom.playModeSlideDuration));
+    dom.playModeSlideDuration.addEventListener('input', () => syncDurationInputs(dom.playModeSlideDuration, dom.slideshowDurationInput));
 }
 
 async function applyLesson(lesson) {
@@ -398,9 +426,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     let modeText = 'Drawn Cards';
     if (mode === 'cof_fifths') modeText = 'Circle of Fifths';
     if (mode === 'cof_fourths') modeText = 'Circle of Fourths';
+    if (mode === 'scale_intervals') modeText = 'Scale Intervals';
+    if (mode === 'scale_triads') modeText = 'Scale Triads';
+    if (mode === 'scale_tetrads') modeText = 'Scale Tetrads';
+    if (mode === 'scale_pentads') modeText = 'Scale Pentads';
+    if (mode === 'scale_sextads') modeText = 'Scale Sextads';
+    if (mode === 'scale_septads') modeText = 'Scale Septads';
     dom.toggleSlideshowModeButton.textContent = `Mode: ${modeText}`;
 
     // Load default C Major scale and draw all dependent cards
     await loadDefaultsAndDraw();
     updatePlayModeDropdowns();
+
+    // Register service worker for offline functionality
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js').then(registration => {
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            }, err => {
+                console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+    }
 });

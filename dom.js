@@ -95,6 +95,7 @@ export const slideshowOptionsWrapper = document.getElementById('slideshow-option
 export const playModeSelectorsContainer = document.getElementById('play-mode-selectors-container');
 export const playModeKeySelect = document.getElementById('play-mode-key-select');
 export const playModeScaleSelect = document.getElementById('play-mode-scale-select');
+export const playModeSlideDuration = document.getElementById('play-mode-slide-duration');
 
 // Sidebar elements
 export const sidebar = document.getElementById('sidebar');
@@ -144,6 +145,9 @@ export const dependentElements = document.querySelectorAll('[data-dependency="sc
 export const toggleDisplayModeButton = document.getElementById('toggle-display-mode-button');
 export const toggleStartFretFilterButton = document.getElementById('toggle-start-fret-filter');
 export const toggleTransposeFilterButton = document.getElementById('toggle-transpose-filter');
+
+// New element
+export const rerandomizeButton = document.getElementById('slideshow-rerandomize-button');
 
 // New button for slideshow mode
 export const toggleSlideshowModeButton = document.getElementById('toggle-slideshow-mode-button');

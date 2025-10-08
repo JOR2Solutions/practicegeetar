@@ -422,6 +422,10 @@ body.play-mode-active #play-mode-selectors-container {
     display: flex;
 }
 
+body.play-mode-active #toggle-slideshow-mode-button-playmode {
+    display: inline-block !important;
+}
+
 /* End PLAY MODE STYLES */
 
 /* Play mode selectors styles */
@@ -430,7 +434,11 @@ body.play-mode-active #play-mode-selectors-container {
     justify-content: center;
     align-items: center;
     gap: 30px;
-    margin-bottom: 20px;
+    margin: 30px 0 20px 0; /* Added top margin for spacing from fretboard area */
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .play-mode-selector-group {
@@ -608,6 +616,33 @@ body.details-hidden #dice-wrapper {
 .roll-button:active {
     transform: translateY(2px);
     box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.slideshow-control-button {
+    padding: 12px 18px;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 8px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    transition: background-color 0.2s, transform 0.1s;
+    min-width: 50px;
+}
+
+.slideshow-control-button:hover {
+    background-color: #45a049;
+}
+
+.slideshow-control-button:active {
+    transform: translateY(2px);
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.slideshow-control-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
 }
 
 #drawn-values-summary {

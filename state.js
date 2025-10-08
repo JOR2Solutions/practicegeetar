@@ -23,6 +23,12 @@ let state = {
     isCoFViewActive: false, // New state flag
     slideshowMode: 'drawn_cards', // 'drawn_cards', 'cof_fifths', or 'cof_fourths'
     cofSlideshowIndex: 0,
+    scaleIntervalsSlideshowIndex: 0, // New index for interval slideshow
+    scaleTriadsSlideshowIndex: 0,
+    scaleTetradsSlideshowIndex: 0,
+    scalePentadsSlideshowIndex: 0,
+    scaleSextadsSlideshowIndex: 0,
+    scaleSeptadsSlideshowIndex: 0,
     areDetailsVisible: false,
     isPlayMode: true, // New state flag for Play Mode
     isDemoMode: false, // New state flag for Demo Mode
@@ -77,6 +83,12 @@ export function resetAllState() {
         isCoFViewActive: false,
         slideshowMode: 'drawn_cards',
         cofSlideshowIndex: 0,
+        scaleIntervalsSlideshowIndex: 0,
+        scaleTriadsSlideshowIndex: 0,
+        scaleTetradsSlideshowIndex: 0,
+        scalePentadsSlideshowIndex: 0,
+        scaleSextadsSlideshowIndex: 0,
+        scaleSeptadsSlideshowIndex: 0,
         isPlayMode: false,
     });
 }
