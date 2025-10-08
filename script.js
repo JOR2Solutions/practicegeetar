@@ -427,6 +427,73 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (mode === 'scale_septads') modeText = 'Scale Septads';
     dom.toggleSlideshowModeButton.textContent = `Mode: ${modeText}`;
 
+    // Insert marketing / intro block under the main title
+    const header = document.querySelector('header');
+    if (header) {
+        const intro = document.createElement('section');
+        intro.id = 'intro';
+        intro.className = 'intro collapsed';
+        intro.innerHTML = `
+            <h2>Welcome to STFU&Play!!!</h2>
+            <h3>The 0% B.S. Way to Master Guitar Scales</h3>
+            <p>This is where excuses go to die and real practice begins. STFU&Play strips away the fluff and gives you exactly what you need to drill scales, intervals, and chords—fast, focused, and effective.</p>
+            <h4>How It Works</h4>
+            <p>By default, the app loads the C Major Scale, cycling through a mix of intervals, chords, and note combinations to sharpen your skills without distractions.</p>
+            <h4>Modes</h4>
+            <p>Tap Mode to switch between powerful practice systems:</p>
+            <pre style="white-space:pre-wrap;font-family:inherit;border:none;padding:0;margin:0;">
+ Default Mode – C Major randomized:
+ 
+ Chords 2x
+ Intervals 2x
+ Triads 2x
+ Tetrads 2x
+ Pentads 2x
+ 2, 3, and 4-string set combos
+ Interval 2x (again, for reinforcement)
+ 
+ Circle of Fifths – See the scale through the circle of fifths
+ Circle of Fourths – Practice through the circle of fourths
+ Scale Intervals – Drill every interval in the scale
+ Scale Triads – 3-note chord groupings
+ Scale Tetrads – 4-note chord groupings
+ Scale Pentads – 5-note groupings
+ Scale Sextads – 6-note groupings
+ Scale Septads – Full 7-note scale combos
+             </pre>
+             <h4>Controls</h4>
+             <p>Use the Stop, Previous, Pause, Next, Random, and Mode buttons to update your fretboard view on the fly.</p>
+             <h4>Customize Your Practice</h4>
+             <p>At the bottom of the page, manually set your Key, Scale, and Duration to match your current practice needs.</p>
+             <h4>Lessons</h4>
+             <p>Want a breakdown? Use the Lessons dropdown for foundational exercises in the key of C, exploring the full range of modes in the diatonic major scale.</p>
+             <p><strong>No fluff. No filler. Just play.<br>STFU&Play.</strong></p>
+         `;
+         intro.style.maxWidth = '900px';
+         intro.style.margin = '0 auto 20px';
+         intro.style.textAlign = 'left';
+         // Make header clickable to toggle collapse
+         const introHeader = document.createElement('div');
+         introHeader.className = 'intro-header';
+         introHeader.innerHTML = `<button class="intro-toggle" aria-expanded="false">Welcome to STFU&Play!!! ▸</button>`;
+         header.insertAdjacentElement('afterend', introHeader);
+         header.insertAdjacentElement('afterend', intro);
+
+         const introToggleButton = introHeader.querySelector('.intro-toggle');
+         function updateIntroToggleUI(expanded) {
+             intro.classList.toggle('collapsed', !expanded);
+             introToggleButton.setAttribute('aria-expanded', String(expanded));
+             introToggleButton.textContent = expanded ? 'Welcome to STFU&Play!!! ▾' : 'Welcome to STFU&Play!!! ▸';
+         }
+         // default collapsed
+         updateIntroToggleUI(false);
+
+         introToggleButton.addEventListener('click', () => {
+             const isExpanded = intro.classList.toggle('collapsed') === false;
+             updateIntroToggleUI(isExpanded);
+         });
+    }
+
     // Load default C Major scale and draw all dependent cards
     await loadDefaultsAndDraw();
     updatePlayModeDropdowns();
