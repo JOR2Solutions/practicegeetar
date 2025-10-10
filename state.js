@@ -15,9 +15,11 @@ let state = {
     currentFourStringSet: null,
     currentInterval: null,
     currentInterval2: null,
+    currentTuning: ['E', 'A', 'D', 'G', 'B', 'E'],
     fretboardDisplayMode: 'intervals', // 'intervals' or 'notes'
+    startFret: 0, // New state for fret range
+    endFret: 4, // New state for fret range
     currentStartFret: null,
-    currentEndFret: 15,
     isStartFretFilterActive: false,
     currentTranspositionValue: null,
     isTransposeFilterActive: false,
@@ -76,9 +78,11 @@ export function resetAllState() {
         currentFourStringSet: null,
         currentInterval: null,
         currentInterval2: null,
+        currentTuning: ['E', 'A', 'D', 'G', 'B', 'E'],
         fretboardDisplayMode: 'intervals',
+        startFret: 0,
+        endFret: 4,
         currentStartFret: null,
-        currentEndFret: 15,
         isStartFretFilterActive: false,
         currentTranspositionValue: null,
         isTransposeFilterActive: false,

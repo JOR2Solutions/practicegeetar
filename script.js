@@ -1,5 +1,5 @@
 import * as dom from './dom.js';
-import { scales, chords, triads, tetrads, pentads, transposeCards, melodicPatterns, threeNoteMelodicPatterns, fourNoteMelodicPatterns, startFrets, twoStringSets, threeStringSets, fourStringSets, chordProgressions, faces1, faces2, faces3, faces4, lessons } from './data.js';
+import { scales, chords, triads, tetrads, pentads, transposeCards, melodicPatterns, threeNoteMelodicPatterns, fourNoteMelodicPatterns, startFrets, twoStringSets, threeStringSets, fourStringSets, chordProgressions, faces1, faces2, faces3, faces4, lessons, TUNINGS } from './data.js';
 import { initFretboards, updateDependentElements, updateFretboardValueDisplays, updateFretboards } from './fretboard.js';
 import { initSummary, closeDropdown, handleDropdownOverlayClick, updateDrawnValuesDisplay } from './summary.js';
 import { rollDie, drawCard, drawScaleCard, clearScale, drawAll, handleCofView, redrawDependentOnScale } from './actions.js';
@@ -37,20 +37,8 @@ function toggleFretboardDisplayMode() {
 }
 
 function toggleStartFretFilter() {
-    const state = getState();
-    if (state.currentStartFret === null) {
-        alert('Please roll the "Start Fret" die first.');
-        return;
-    }
-
-    const newState = !state.isStartFretFilterActive;
-    updateState({ isStartFretFilterActive: newState });
-
-    dom.toggleStartFretFilterButton.textContent = newState 
-        ? `Start Fret Filter Active (${state.currentStartFret})`
-        : 'Apply Start Fret Filter (Off)';
-    
-    updateFretboards();
+    // This function is no longer needed as the UI is removed.
+    // The logic is now handled by the new start/end fret inputs.
 }
 
 function toggleTransposeFilter() {
@@ -229,35 +217,13 @@ function initializeEventListeners() {
     dom.playModeKeySelect.addEventListener('change', handlePlayModeSelectionChange);
     dom.playModeScaleSelect.addEventListener('change', handlePlayModeSelectionChange);
 
-    // Fret range inputs (Start / End) next to Lessons dropdown
-    if (dom.fretRangeStartInput && dom.fretRangeEndInput) {
-        const clampFretValues = () => {
-            let startVal = parseInt(dom.fretRangeStartInput.value, 10);
-            let endVal = parseInt(dom.fretRangeEndInput.value, 10);
-            if (isNaN(startVal)) startVal = 0;
-            if (isNaN(endVal)) endVal = 15;
-            if (startVal < 0) startVal = 0;
-            if (endVal < 1) endVal = Math.max(1, startVal + 1);
-            if (endVal <= startVal) endVal = startVal + 1;
-            // Limit to reasonable maximum (24)
-            startVal = Math.min(24, startVal);
-            endVal = Math.min(24, endVal);
-            dom.fretRangeStartInput.value = startVal;
-            dom.fretRangeEndInput.value = endVal;
-            return { startVal, endVal };
-        };
-
-        const applyFretRange = () => {
-            const { startVal, endVal } = clampFretValues();
-            updateState({ currentStartFret: startVal, currentEndFret: endVal });
-            // Recreate fretboards to match new range and redraw
-            initFretboards();
-            updateFretboards();
-        };
-
-        dom.fretRangeStartInput.addEventListener('change', applyFretRange);
-        dom.fretRangeEndInput.addEventListener('change', applyFretRange);
-    }
+    // Fret range input listeners
+    dom.startFretInput.addEventListener('change', handleFretRangeChange);
+    dom.endFretInput.addEventListener('change', handleFretRangeChange);
+    dom.resetFretRangeButton.addEventListener('click', resetFretRange);
+    
+    // New listener for tuning change
+    dom.tuningSelect.addEventListener('change', handleTuningChange);
 
     // Sync duration inputs
     const syncDurationInputs = (source, target) => {
@@ -317,9 +283,11 @@ function handleLessonChange(event) {
         const selectedLesson = lessons.find(l => l.name === lessonName);
         applyLesson(selectedLesson);
     }
+    stopSlideshow();
 }
 
 async function handlePlayModeSelectionChange() {
+    stopSlideshow();
     const selectedKey = dom.playModeKeySelect.value;
     const selectedScaleName = dom.playModeScaleSelect.value;
 
@@ -334,6 +302,73 @@ async function handlePlayModeSelectionChange() {
     // Ensure the slideshow updates to show the new scale, as it's the main view in play mode.
     // The slideshow should already be on the scale slide, but we call this to be safe.
     updateFretboards(); 
+}
+
+function resetFretRange() {
+    const defaultStartFret = 0;
+    const defaultEndFret = 4;
+
+    dom.startFretInput.value = defaultStartFret;
+    dom.endFretInput.value = defaultEndFret;
+
+    updateState({ startFret: defaultStartFret, endFret: defaultEndFret });
+    initFretboards();
+    updateFretboards();
+    stopSlideshow();
+}
+
+function handleFretRangeChange() {
+    const startFret = parseInt(dom.startFretInput.value, 10);
+    const endFret = parseInt(dom.endFretInput.value, 10);
+
+    if (startFret >= endFret) {
+        alert("Start fret must be less than end fret.");
+        const oldState = getState();
+        dom.startFretInput.value = oldState.startFret;
+        dom.endFretInput.value = oldState.endFret;
+        return;
+    }
+
+    updateState({ startFret, endFret });
+    // This will re-initialize all fretboards with the new range
+    initFretboards();
+    // This will update the notes on the newly created fretboards
+    updateFretboards();
+    stopSlideshow();
+}
+
+function handleTuningChange() {
+    const tuningKey = dom.tuningSelect.value;
+    const newTuning = TUNINGS[tuningKey];
+    if (newTuning) {
+        updateState({ currentTuning: newTuning });
+        initFretboards(); // This will recreate the fretboards with the correct number of strings
+        updateFretboards(); // This will redraw the notes
+    }
+    stopSlideshow();
+}
+
+function setupMobileViewToggle() {
+    const toggle = document.getElementById('mobile-view-toggle');
+    if (!toggle) return;
+
+    // Check localStorage for saved preference
+    const isMobileView = localStorage.getItem('mobileView') === 'true';
+    if (isMobileView) {
+        document.body.classList.add('mobile-view');
+        toggle.checked = true;
+    }
+
+    toggle.addEventListener('change', (e) => {
+        if (e.target.checked) {
+            document.body.classList.add('mobile-view');
+            localStorage.setItem('mobileView', 'true');
+        } else {
+            document.body.classList.remove('mobile-view');
+            localStorage.setItem('mobileView', 'false');
+        }
+        stopSlideshow();
+    });
 }
 
 function populatePlayModeDropdowns() {
@@ -352,6 +387,23 @@ function populatePlayModeDropdowns() {
         option.textContent = scale.name;
         dom.playModeScaleSelect.appendChild(option);
     });
+}
+
+function populateTuningDropdown() {
+    if (!dom.tuningSelect) return;
+    for (const key in TUNINGS) {
+        const option = document.createElement('option');
+        option.value = key;
+        // Create a user-friendly name from the key
+        let name = key.replace(/-/g, ' ');
+        name = name.charAt(0).toUpperCase() + name.slice(1);
+        option.textContent = name;
+        dom.tuningSelect.appendChild(option);
+    }
+    // Set default value based on initial state
+    const { currentTuning } = getState();
+    const defaultKey = Object.keys(TUNINGS).find(key => JSON.stringify(TUNINGS[key]) === JSON.stringify(currentTuning)) || '6-string-standard';
+    dom.tuningSelect.value = defaultKey;
 }
 
 async function loadDefaultsAndDraw() {
@@ -410,6 +462,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateFretboardValueDisplays();
     
     populatePlayModeDropdowns();
+    populateTuningDropdown();
 
     // Populate lesson dropdown
     lessons.forEach(lesson => {
@@ -457,77 +510,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (mode === 'scale_septads') modeText = 'Scale Septads';
     dom.toggleSlideshowModeButton.textContent = `Mode: ${modeText}`;
 
-    // Insert marketing / intro block under the main title
-    const header = document.querySelector('header');
-    if (header) {
-        const intro = document.createElement('section');
-        intro.id = 'intro';
-        intro.className = 'intro collapsed';
-        intro.innerHTML = `
-            <h2>Welcome to STFU&Play!!!</h2>
-            <h3>The 0% B.S. Way to Master Guitar Scales</h3>
-            <p>This is where excuses go to die and real practice begins. STFU&Play strips away the fluff and gives you exactly what you need to drill scales, intervals, and chords—fast, focused, and effective.</p>
-            <h4>How It Works</h4>
-            <p>By default, the app loads the C Major Scale, cycling through a mix of intervals, chords, and note combinations to sharpen your skills without distractions.</p>
-            <h4>Modes</h4>
-            <p>Tap Mode to switch between powerful practice systems:</p>
-            <pre style="white-space:pre-wrap;font-family:inherit;border:none;padding:0;margin:0;">
- Default Mode – C Major randomized:
- 
- Chords 2x
- Intervals 2x
- Triads 2x
- Tetrads 2x
- Pentads 2x
- 2, 3, and 4-string set combos
- Interval 2x (again, for reinforcement)
- 
- Circle of Fifths – See the scale through the circle of fifths
- Circle of Fourths – Practice through the circle of fourths
- Scale Intervals – Drill every interval in the scale
- Scale Triads – 3-note chord groupings
- Scale Tetrads – 4-note chord groupings
- Scale Pentads – 5-note groupings
- Scale Sextads – 6-note groupings
- Scale Septads – Full 7-note scale combos
-             </pre>
-             <h4>Controls</h4>
-             <p>Use the Stop, Previous, Pause, Next, Random, and Mode buttons to update your fretboard view on the fly.</p>
-             <h4>Customize Your Practice</h4>
-             <p>At the bottom of the page, manually set your Key, Scale, and Duration to match your current practice needs.</p>
-             <h4>Lessons</h4>
-             <p>Want a breakdown? Use the Lessons dropdown for foundational exercises in the key of C, exploring the full range of modes in the diatonic major scale.</p>
-             <p><strong>No fluff. No filler. Just play.<br>STFU&Play.</strong></p>
-         `;
-         intro.style.maxWidth = '900px';
-         intro.style.margin = '0 auto 20px';
-         intro.style.textAlign = 'left';
-         // Make header clickable to toggle collapse
-         const introHeader = document.createElement('div');
-         introHeader.className = 'intro-header';
-         introHeader.innerHTML = `<button class="intro-toggle" aria-expanded="false">Welcome to STFU&Play!!! ▸</button>`;
-         header.insertAdjacentElement('afterend', introHeader);
-         header.insertAdjacentElement('afterend', intro);
-
-         const introToggleButton = introHeader.querySelector('.intro-toggle');
-         function updateIntroToggleUI(expanded) {
-             intro.classList.toggle('collapsed', !expanded);
-             introToggleButton.setAttribute('aria-expanded', String(expanded));
-             introToggleButton.textContent = expanded ? 'Welcome to STFU&Play!!! ▾' : 'Welcome to STFU&Play!!! ▸';
-         }
-         // default collapsed
-         updateIntroToggleUI(false);
-
-         introToggleButton.addEventListener('click', () => {
-             const isExpanded = intro.classList.toggle('collapsed') === false;
-             updateIntroToggleUI(isExpanded);
-         });
-    }
-
-    // Set initial Start/End fret input values from state
-    if (dom.fretRangeStartInput) dom.fretRangeStartInput.value = (getState().currentStartFret !== null) ? getState().currentStartFret : 0;
-    if (dom.fretRangeEndInput) dom.fretRangeEndInput.value = (getState().currentEndFret !== null) ? getState().currentEndFret : 15;
-
     // Load default C Major scale and draw all dependent cards
     await loadDefaultsAndDraw();
     updatePlayModeDropdowns();
@@ -542,4 +524,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         });
     }
+
+    // Setup mobile view toggle
+    setupMobileViewToggle();
 });

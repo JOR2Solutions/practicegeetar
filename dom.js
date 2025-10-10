@@ -96,6 +96,11 @@ export const playModeSelectorsContainer = document.getElementById('play-mode-sel
 export const playModeKeySelect = document.getElementById('play-mode-key-select');
 export const playModeScaleSelect = document.getElementById('play-mode-scale-select');
 export const playModeSlideDuration = document.getElementById('play-mode-slide-duration');
+export const startFretInput = document.getElementById('start-fret-input');
+export const endFretInput = document.getElementById('end-fret-input');
+export const resetFretRangeButton = document.getElementById('reset-fret-range-button');
+export const tuningSelect = document.getElementById('tuning-select');
+export const mainTitle = document.getElementById('main-title');
 
 // Sidebar elements
 export const sidebar = document.getElementById('sidebar');
@@ -125,6 +130,7 @@ export const cofValueDisplay = document.getElementById('cof-value-display');
 export const slideshowFretboardContainer = document.getElementById('slideshow-fretboard-container');
 export const slideshowFretboardTitle = document.getElementById('slideshow-fretboard-title');
 export const slideshowFretboardValue = document.getElementById('slideshow-fretboard-value');
+export const slideshowTuningInfo = document.getElementById('slideshow-tuning-info');
 export const slideshowDurationInput = document.getElementById('slideshow-duration');
 // exportGifButton removed
 
@@ -153,7 +159,3 @@ export const toggleDetailsButton = document.getElementById('toggle-details-butto
 
 // New dropdown for lessons
 export const lessonSelect = document.getElementById('lesson-select');
-
-// New fret range inputs (next to lessons dropdown)
-export const fretRangeStartInput = document.getElementById('fret-range-start');
-export const fretRangeEndInput = document.getElementById('fret-range-end');

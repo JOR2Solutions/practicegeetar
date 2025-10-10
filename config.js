@@ -3,7 +3,6 @@ import { faces1, faces2, faces3, faces4, startFrets, scales, chords, triads, tet
 
 // Fretboard Constants
 export const NUM_FRETS = 15;
-export const TUNING = ['E', 'A', 'D', 'G', 'B', 'E']; // Standard tuning from low E to high e
 
 // Configuration map for attributes for interactive summary
 export const INTERACTIVE_CONFIG = {

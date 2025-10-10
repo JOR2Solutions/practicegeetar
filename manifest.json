@@ -1,5 +1,5 @@
 {
-  "name": "Practice Generator",
+  "name": "Play",
   "short_name": "PracticeGen",
   "start_url": "/",
   "display": "standalone",
@@ -19,4 +19,3 @@
     }
   ]
 }
-

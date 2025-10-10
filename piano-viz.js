@@ -31,7 +31,7 @@ export function createPiano(containerElement, pianoId) {
     keyboard.id = pianoId;
     keyboard.classList.add('piano-keyboard');
 
-    for (let octave = 0; octave < 2; octave++) {
+    for (let octave = 0; octave < 4; octave++) {
         PIANO_KEY_INFO.forEach(keyInfo => {
             const key = document.createElement('div');
             key.classList.add(keyInfo.type === 'white' ? 'white-key' : 'black-key');

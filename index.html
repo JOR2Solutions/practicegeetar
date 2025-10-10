@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Practice Generator</title>
+    <title>Play</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4CAF50">
@@ -63,7 +63,7 @@
             </div>
 
             <!-- Start Fret Filter -->
-            <div id="start-fret-filter-container" style="margin-bottom: 20px;">
+            <div id="start-fret-filter-container" style="margin-bottom: 20px; display: none;">
                 <label>Start Fret Filter:</label>
                 <button id="toggle-start-fret-filter" class="roll-button" style="padding: 5px 10px; font-size: 16px;">Apply Start Fret Filter (Off)</button>
             </div>
@@ -85,16 +85,14 @@
                 <span></span>
                 <span></span>
             </button>
-            <h1>STFU&Play!!!</h1>
+            <h1 id="main-title">Play</h1>
         </header>
 
         <!-- Fretboard Area -->
         <div id="fretboard-area">
             <h3 id="slideshow-fretboard-title"></h3>
-            <div style="display:flex; align-items:center; justify-content:center; gap:12px;">
-                <h4 id="slideshow-fretboard-value" class="fretboard-value-display"></h4>
-                <div id="slideshow-countdown" aria-live="polite" style="font-weight:bold; color:#333; min-width:60px; text-align:center;"></div>
-            </div>
+            <h4 id="slideshow-fretboard-value" class="fretboard-value-display"></h4>
+            <div id="slideshow-tuning-info" style="font-size: 14px; color: #555; padding: 5px 10px; background-color: #fff; border: 1px solid #ccc; border-radius: 5px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); display: inline-block; margin-bottom: 10px;"></div>
             
             <div class="diagram-pair-container">
                 <div id="slideshow-fretboard-container" class="fretboard-display"></div>
@@ -102,14 +100,17 @@
             </div>
 
             <!-- Moved Slideshow Playback Controls: now under the piano diagram -->
-            <div id="slideshow-controls" style="display:flex; justify-content:center; gap:10px; margin-top:12px; margin-bottom:20px;">
-                <button id="slideshow-stop-button" class="slideshow-control-button" title="Stop">⏹</button>
-                <button id="slideshow-back-button" class="slideshow-control-button" title="Previous Slide">⏮</button>
-                <button id="slideshow-play-button" class="slideshow-control-button" title="Play">▶</button>
-                <button id="slideshow-pause-button" class="slideshow-control-button" title="Pause" style="display:none;">⏸</button>
-                <button id="slideshow-forward-button" class="slideshow-control-button" title="Next Slide">⏭</button>
-                <button id="slideshow-rerandomize-button" class="slideshow-control-button" title="Rerandomize">🎲</button>
-                <button id="toggle-slideshow-mode-button-playmode" class="slideshow-control-button" title="Slideshow Mode" style="display:none;">Mode</button>
+            <div id="slideshow-controls-wrapper" style="display:flex; flex-direction: column; align-items:center; gap:10px; margin-top:12px; margin-bottom:20px;">
+                <div id="slideshow-controls" style="display:flex; justify-content:center; gap:10px;">
+                    <button id="slideshow-stop-button" class="slideshow-control-button" title="Stop">⏹</button>
+                    <button id="slideshow-back-button" class="slideshow-control-button" title="Previous Slide">⏮</button>
+                    <button id="slideshow-play-button" class="slideshow-control-button" title="Play">▶</button>
+                    <button id="slideshow-pause-button" class="slideshow-control-button" title="Pause" style="display:none;">⏸</button>
+                    <button id="slideshow-forward-button" class="slideshow-control-button" title="Next Slide">⏭</button>
+                    <button id="slideshow-rerandomize-button" class="slideshow-control-button" title="Rerandomize">🎲</button>
+                    <button id="toggle-slideshow-mode-button-playmode" class="slideshow-control-button" title="Slideshow Mode" style="display:none;">Mode</button>
+                </div>
+                <div id="slideshow-countdown" aria-live="polite" style="font-weight:bold; color:#333; min-width:60px; text-align:center; font-size: 20px;"></div>
             </div>
             
             <!-- duplicate diagram-pair removed to prevent ghost spacing under controls -->
@@ -272,12 +273,19 @@
                 </select>
             </div>
             <div class="play-mode-selector-group">
-                <label for="fret-range-start">Start Fret:</label>
-                <input type="number" id="fret-range-start" value="0" min="0" max="24" style="padding:6px; font-size:14px; width:70px;">
+                <label for="start-fret-input">Start Fret:</label>
+                <input type="number" id="start-fret-input" value="0" min="0" max="23" style="padding: 8px 12px; font-size: 18px; border-radius: 5px; border: 1px solid #ccc; background-color: #fff; width: 60px;">
             </div>
             <div class="play-mode-selector-group">
-                <label for="fret-range-end">End Fret:</label>
-                <input type="number" id="fret-range-end" value="15" min="1" max="24" style="padding:6px; font-size:14px; width:70px;">
+                <label for="end-fret-input">End Fret:</label>
+                <input type="number" id="end-fret-input" value="4" min="1" max="24" style="padding: 8px 12px; font-size: 18px; border-radius: 5px; border: 1px solid #ccc; background-color: #fff; width: 60px;">
+            </div>
+            <div class="play-mode-selector-group">
+                <button id="reset-fret-range-button" class="roll-button" style="padding: 8px 12px; font-size: 16px; margin-top: auto; background-color: #f44336;">Reset Frets</button>
+            </div>
+            <div class="play-mode-selector-group">
+                <label for="tuning-select">Tuning:</label>
+                <select id="tuning-select"></select>
             </div>
         </div>
 
@@ -469,5 +477,15 @@
     <!-- Remotion/GIF exporter removed -->
 
     <script type="module" src="script.js"></script>
+
+    <footer>
+        <div class="mobile-view-switch">
+            <span class="switch-label">Mobile Friendly View</span>
+            <label class="switch">
+                <input type="checkbox" id="mobile-view-toggle">
+                <span class="slider round"></span>
+            </label>
+        </div>
+    </footer>
 </body>
 </html>

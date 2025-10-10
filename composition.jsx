@@ -70,9 +70,9 @@ const Piano = ({ rootNote, intervals, isScale, scaleIntervals }) => {
     { name: "A#", type: "black", semitone: 10 },
     { name: "B", type: "white", semitone: 11 }
   ];
-  const twoOctavesKeys = [...pianoKeyInfo, ...pianoKeyInfo];
-  return /* @__PURE__ */ jsxDEV("div", { style: { display: "flex", position: "relative", height: 180, width: 422, border: "1px solid black", transform: "scale(1.1)" }, children: [
-    twoOctavesKeys.filter((k) => k.type === "white").map((key, i) => /* @__PURE__ */ jsxDEV("div", { style: { width: 30, height: 180, border: "1px solid #333", boxSizing: "border-box", backgroundColor: "white", zIndex: 1, position: "relative" }, children: noteIndices.has(key.semitone) && /* @__PURE__ */ jsxDEV(PianoNoteMarker, { rootNoteIndex, currentSemitone: key.semitone, intervals: finalIntervals, semitoneOffsets }, void 0, false, {
+  const fourOctavesKeys = [...pianoKeyInfo, ...pianoKeyInfo, ...pianoKeyInfo, ...pianoKeyInfo];
+  return /* @__PURE__ */ jsxDEV("div", { style: { display: "flex", position: "relative", height: 180, width: 842, border: "1px solid black", transform: "scale(1.1)" }, children: [
+    fourOctavesKeys.filter((k) => k.type === "white").map((key, i) => /* @__PURE__ */ jsxDEV("div", { style: { width: 30, height: 180, border: "1px solid #333", boxSizing: "border-box", backgroundColor: "white", zIndex: 1, position: "relative" }, children: noteIndices.has(key.semitone) && /* @__PURE__ */ jsxDEV(PianoNoteMarker, { rootNoteIndex, currentSemitone: key.semitone, intervals: finalIntervals, semitoneOffsets }, void 0, false, {
       fileName: "<stdin>",
       lineNumber: 70,
       columnNumber: 55
@@ -81,7 +81,7 @@ const Piano = ({ rootNote, intervals, isScale, scaleIntervals }) => {
       lineNumber: 69,
       columnNumber: 17
     })),
-    twoOctavesKeys.map((key, i) => {
+    fourOctavesKeys.map((key, i) => {
       if (key.type !== "black") return null;
       const octave = Math.floor(i / 12);
       const indexInOctave = i % 12;
@@ -137,7 +137,9 @@ const PianoNoteMarker = ({ rootNoteIndex, currentSemitone, intervals, semitoneOf
     columnNumber: 9
   });
 };
-const Fretboard = ({ rootNote, scaleIntervals, intervals, isScale, activeStrings, fretboardDisplayMode }) => {
+const Fretboard = ({ rootNote, scaleIntervals, intervals, isScale, activeStrings, fretboardDisplayMode, tuning }) => {
+  const TUNING2 = tuning || ["E", "A", "D", "G", "B", "E"];
+  const NUM_FRETS2 = 15;
   if (!rootNote || !intervals || intervals.length === 0) {
     return null;
   }
@@ -163,10 +165,10 @@ const Fretboard = ({ rootNote, scaleIntervals, intervals, isScale, activeStrings
     borderRadius: 5,
     transform: "scale(1.1)"
     // Make it a bit bigger in the frame
-  }, children: TUNING.slice().reverse().map((openNote, i) => {
+  }, children: TUNING2.slice().reverse().map((openNote, i) => {
     const stringNumber = i + 1;
     const stringStyle = { display: "table-row", opacity: activeStrings && !activeStrings.includes(stringNumber) ? 0.3 : 1 };
-    return /* @__PURE__ */ jsxDEV("div", { style: stringStyle, children: Array.from({ length: NUM_FRETS + 1 }).map((_, fret) => {
+    return /* @__PURE__ */ jsxDEV("div", { style: stringStyle, children: Array.from({ length: NUM_FRETS2 + 1 }).map((_, fret) => {
       const fretStyle = {
         display: "table-cell",
         minWidth: 60,
@@ -182,16 +184,27 @@ const Fretboard = ({ rootNote, scaleIntervals, intervals, isScale, activeStrings
       const openNoteIndex = getNoteIndex(openNote);
       const currentNoteIndex = (openNoteIndex + fret) % 12;
       const hasNote = noteIndices.has(currentNoteIndex);
-      const stringLineHeight = [1, 1.5, 2, 2, 3, 3][i];
+      const numStrings = TUNING2.length;
+      const baseThickness = [1, 1.5, 2, 2, 3, 3];
+      let stringLineHeight = 1.5;
+      if (numStrings === 6) {
+        stringLineHeight = baseThickness[i];
+      } else if (numStrings === 4) {
+        stringLineHeight = [2, 2.5, 3, 3.5][i];
+      } else if (numStrings === 7) {
+        stringLineHeight = [1, 1.5, 2, 2, 3, 3, 3.5][i];
+      } else if (numStrings === 8) {
+        stringLineHeight = [1, 1.5, 2, 2, 3, 3, 3.5, 4][i];
+      }
       return /* @__PURE__ */ jsxDEV("div", { style: fretStyle, children: [
         fret > 0 && /* @__PURE__ */ jsxDEV("span", { style: { position: "absolute", height: "100%", width: 1, backgroundColor: "#ccc", right: 0, top: 0, zIndex: 1 } }, void 0, false, {
           fileName: "<stdin>",
-          lineNumber: 172,
+          lineNumber: 187,
           columnNumber: 32
         }),
         /* @__PURE__ */ jsxDEV("div", { style: { position: "absolute", width: "100%", backgroundColor: "#666", left: 0, top: "50%", transform: "translateY(-50%)", zIndex: 2, height: stringLineHeight } }, void 0, false, {
           fileName: "<stdin>",
-          lineNumber: 173,
+          lineNumber: 188,
           columnNumber: 19
         }),
         hasNote && /* @__PURE__ */ jsxDEV(
@@ -210,23 +223,23 @@ const Fretboard = ({ rootNote, scaleIntervals, intervals, isScale, activeStrings
           false,
           {
             fileName: "<stdin>",
-            lineNumber: 174,
+            lineNumber: 189,
             columnNumber: 31
           }
         )
       ] }, fret, true, {
         fileName: "<stdin>",
-        lineNumber: 171,
+        lineNumber: 186,
         columnNumber: 17
       });
     }) }, i, false, {
       fileName: "<stdin>",
-      lineNumber: 152,
+      lineNumber: 155,
       columnNumber: 11
     });
   }) }, void 0, false, {
     fileName: "<stdin>",
-    lineNumber: 142,
+    lineNumber: 145,
     columnNumber: 5
   });
 };
@@ -269,7 +282,7 @@ const NoteMarker = ({ rootNoteIndex, currentNoteIndex, isScale, scaleIntervals, 
     boxShadow: "1px 1px 3px rgba(0,0,0,0.5)"
   }, children: text }, void 0, false, {
     fileName: "<stdin>",
-    lineNumber: 219,
+    lineNumber: 234,
     columnNumber: 5
   });
 };
@@ -277,37 +290,37 @@ const Slide = ({ title, value, ...diagramProps }) => {
   return /* @__PURE__ */ jsxDEV(AbsoluteFill, { style: { backgroundColor: "#f0f0f0", justifyContent: "center", alignItems: "center", display: "flex", flexDirection: "column", gap: 10 }, children: [
     /* @__PURE__ */ jsxDEV("h3", { style: { fontSize: 48, margin: 0 }, children: title }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 235,
+      lineNumber: 250,
       columnNumber: 7
     }),
     value && /* @__PURE__ */ jsxDEV("h4", { style: { fontSize: 36, margin: 0, fontWeight: "normal" }, children: value }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 236,
+      lineNumber: 251,
       columnNumber: 17
     }),
     /* @__PURE__ */ jsxDEV("div", { style: { margin: "20px", display: "flex", justifyContent: "center", alignItems: "flex-start", gap: "30px", flexWrap: "wrap" }, children: [
       /* @__PURE__ */ jsxDEV(Fretboard, { ...diagramProps }, void 0, false, {
         fileName: "<stdin>",
-        lineNumber: 238,
+        lineNumber: 253,
         columnNumber: 9
       }),
       /* @__PURE__ */ jsxDEV(Piano, { ...diagramProps }, void 0, false, {
         fileName: "<stdin>",
-        lineNumber: 239,
+        lineNumber: 254,
         columnNumber: 9
       })
     ] }, void 0, true, {
       fileName: "<stdin>",
-      lineNumber: 237,
+      lineNumber: 252,
       columnNumber: 7
     })
   ] }, void 0, true, {
     fileName: "<stdin>",
-    lineNumber: 234,
+    lineNumber: 249,
     columnNumber: 5
   });
 };
-const SlideshowComposition = ({ slides, duration, rootNote, scaleIntervals, fretboardDisplayMode }) => {
+const SlideshowComposition = ({ slides, duration, rootNote, scaleIntervals, fretboardDisplayMode, tuning }) => {
   const durationInFrames = duration * 30;
   return /* @__PURE__ */ jsxDEV(AbsoluteFill, { style: { backgroundColor: "#f0f0f0" }, children: /* @__PURE__ */ jsxDEV(TransitionSeries, { children: slides.map((slideData, index) => /* @__PURE__ */ jsxDEV(Fragment, { children: [
     /* @__PURE__ */ jsxDEV(TransitionSeries.Sequence, { durationInFrames, children: /* @__PURE__ */ jsxDEV(
@@ -320,18 +333,19 @@ const SlideshowComposition = ({ slides, duration, rootNote, scaleIntervals, fret
         intervals: slideData.intervals,
         isScale: slideData.isScale,
         activeStrings: slideData.activeStrings,
-        fretboardDisplayMode
+        fretboardDisplayMode,
+        tuning
       },
       void 0,
       false,
       {
         fileName: "<stdin>",
-        lineNumber: 254,
+        lineNumber: 269,
         columnNumber: 15
       }
     ) }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 253,
+      lineNumber: 268,
       columnNumber: 13
     }),
     index < slides.length - 1 && /* @__PURE__ */ jsxDEV(
@@ -344,21 +358,21 @@ const SlideshowComposition = ({ slides, duration, rootNote, scaleIntervals, fret
       false,
       {
         fileName: "<stdin>",
-        lineNumber: 266,
+        lineNumber: 282,
         columnNumber: 15
       }
     )
   ] }, index, true, {
     fileName: "<stdin>",
-    lineNumber: 252,
+    lineNumber: 267,
     columnNumber: 11
   })) }, void 0, false, {
     fileName: "<stdin>",
-    lineNumber: 250,
+    lineNumber: 265,
     columnNumber: 7
   }) }, void 0, false, {
     fileName: "<stdin>",
-    lineNumber: 249,
+    lineNumber: 264,
     columnNumber: 5
   });
 };

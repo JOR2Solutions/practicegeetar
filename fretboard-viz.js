@@ -1,6 +1,6 @@
 import { getState } from './state.js';
 import { INTERVAL_SEMITONES, getNoteFromIndex, getNoteIndex } from './data.js';
-import { TUNING, NUM_FRETS } from './config.js';
+import { NUM_FRETS } from './config.js';
 import { calculateTransposition } from './utils.js';
 
 // Define INTERVAL_COLORS here, as it's visualization specific
@@ -46,14 +46,18 @@ export function getScaleSemitoneSet(scaleIntervals) {
 /**
  * Initializes the static DOM structure for a fretboard diagram.
  */
-export function createFretboard(containerElement, fretboardId, numVisibleFrets = NUM_FRETS, fretStart = 0) {
+export function createFretboard(containerElement, fretboardId, fretStart = 0, fretEnd = NUM_FRETS) {
     
     // Clear the container first
     containerElement.innerHTML = '';
+    
+    const { currentTuning: TUNING, tuningSelect } = getState();
 
     const fretboard = document.createElement('div');
     fretboard.id = fretboardId;
     fretboard.classList.add('fretboard-diagram');
+
+    const numVisibleFrets = fretEnd - fretStart;
 
     // 1. Strings and Frets
     TUNING.forEach((openNote, i) => {
@@ -79,27 +83,32 @@ export function createFretboard(containerElement, fretboardId, numVisibleFrets =
                  fretDiv.innerHTML = `<span></span><div class="string-line"></div>`; // Fret wire span
             }
             
-            // Fret dots (inlays). i=2 corresponds to the D string row visually.
-            const singleDotFrets = [3, 5, 7, 9, 15];
-            const doubleDotFret = 12;
+            // Fret dots (inlays). i=2 corresponds to the D string row visually for a 6-string. This needs adjustment for other instruments.
+            // Let's assume the middle-ish string gets the dots.
+            const dotRow = Math.floor(TUNING.length / 2) -1;
+
+            const singleDotFrets = [3, 5, 7, 9, 15, 17, 19, 21];
+            const doubleDotFrets = [12, 24];
             
             // We only show dots if fret 0 is included (i.e., we see the start of the neck)
-            if (fretStart === 0) { 
-                if (i === 2) { 
-                    if (singleDotFrets.includes(fret)) {
-                        const dot = document.createElement('div');
-                        dot.className = 'fret-dot';
-                        dot.style.top = '0%'; 
-                        fretDiv.appendChild(dot);
-                    }
+            if (i === dotRow) { 
+                if (singleDotFrets.includes(fret)) {
+                    const dot = document.createElement('div');
+                    dot.className = 'fret-dot';
+                    dot.style.top = '0%'; 
+                    fretDiv.appendChild(dot);
                 }
-                if (fret === doubleDotFret) {
-                    if (i === 1 || i === 4) {
-                        const dot = document.createElement('div');
-                        dot.className = 'fret-dot';
-                        dot.style.top = i === 1 ? '0%' : '100%'; 
-                        fretDiv.appendChild(dot);
-                    }
+            }
+            if (doubleDotFrets.includes(fret)) {
+                // For double dots, use rows above and below the center line.
+                const doubleDotRow1 = Math.floor(TUNING.length / 2) - 2;
+                const doubleDotRow2 = Math.ceil(TUNING.length / 2);
+
+                if (i === doubleDotRow1 || i === doubleDotRow2) {
+                    const dot = document.createElement('div');
+                    dot.className = 'fret-dot';
+                    dot.style.top = i === doubleDotRow1 ? '0%' : '100%'; 
+                    fretDiv.appendChild(dot);
                 }
             }
 
@@ -116,7 +125,8 @@ export function createFretboard(containerElement, fretboardId, numVisibleFrets =
     fretNumbersInner.style.display = 'table';
     fretNumbersInner.style.width = '100%';
 
-    const singleMarkers = [3, 5, 7, 9, 15];
+    const singleMarkers = [3, 5, 7, 9, 15, 17, 19, 21];
+    const doubleMarkers = [12, 24];
 
     for(let fretIndex = 0; fretIndex <= numVisibleFrets; fretIndex++) {
         const fret = fretStart + fretIndex;
@@ -126,8 +136,7 @@ export function createFretboard(containerElement, fretboardId, numVisibleFrets =
         fretNumSpan.style.textAlign = 'center';
         
         if (fret > 0) {
-            if (singleMarkers.includes(fret)) fretNumSpan.textContent = fret;
-            if (fret === 12) fretNumSpan.textContent = '12';
+            if (singleMarkers.includes(fret) || doubleMarkers.includes(fret)) fretNumSpan.textContent = fret;
         }
 
         fretNumbersInner.appendChild(fretNumSpan);
@@ -151,6 +160,7 @@ export function updateFretboardDisplay(containerElement, intervals, isScale, act
         isStartFretFilterActive,
         isTransposeFilterActive,
         currentTranspositionValue,
+        currentTuning: TUNING,
     } = getState();
     const fretboard = containerElement.querySelector('.fretboard-diagram');
     if (!fretboard) return;
@@ -208,7 +218,7 @@ export function updateFretboardDisplay(containerElement, intervals, isScale, act
     const strings = fretboard.querySelectorAll('.string');
     strings.forEach((stringEl, index) => {
         // String number 1 for High E (index 0) up to 6 for Low E (index 5)
-        const stringNumber = 6 - index; 
+        const stringNumber = TUNING.length - index; 
 
         if (activeStrings && !activeStrings.includes(stringNumber)) {
             stringEl.style.opacity = '0.3';

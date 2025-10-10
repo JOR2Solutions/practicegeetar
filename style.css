@@ -272,12 +272,15 @@ h1 {
     transform: translateY(-50%);
     z-index: 2;
 }
+/* Default thicknesses for up to 8 strings, from high to low pitch (visually top to bottom) */
 .string:nth-child(1) .string-line { height: 1px; }
 .string:nth-child(2) .string-line { height: 1.5px; }
 .string:nth-child(3) .string-line { height: 2px; }
-.string:nth-child(4) .string-line { height: 2px; }
+.string:nth-child(4) .string-line { height: 2.5px; }
 .string:nth-child(5) .string-line { height: 3px; }
-.string:nth-child(6) .string-line { height: 3px; }
+.string:nth-child(6) .string-line { height: 3.5px; }
+.string:nth-child(7) .string-line { height: 4px; }
+.string:nth-child(8) .string-line { height: 4.5px; }
 
 .fret-dot {
     position: absolute;
@@ -430,7 +433,7 @@ body.play-mode-active #toggle-slideshow-mode-button-playmode {
 
 /* Play mode selectors styles */
 #play-mode-selectors-container {
-    display: none;
+    display: flex;
     justify-content: center;
     align-items: center;
     gap: 30px;
@@ -439,31 +442,32 @@ body.play-mode-active #toggle-slideshow-mode-button-playmode {
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    flex-wrap: wrap; /* Allow wrapping */
 }
 
 .play-mode-selector-group {
-    transform: scale(0.5);
-    transform-origin: top left;
-    margin-right: 12px; /* keep spacing when scaled */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 /* Make sure selects/inputs remain usable when scaled */
 #play-mode-selectors-container {
-    gap: 18px; /* slightly reduced gap to compensate scale */
+    gap: 30px; /* slightly reduced gap to compensate scale */
 }
 
 /* Ensure the inline style on the duration input doesn't override the small size */
 #play-mode-slide-duration {
-    width: 40px !important;
-    padding: 6px 8px !important;
-    font-size: 12px !important;
+    width: 60px !important;
+    padding: 8px 12px !important;
+    font-size: 18px !important;
 }
 
 /* Reduce minimum width of selects to fit scaled layout */
 .play-mode-selector-group select {
     min-width: 140px;
-    font-size: 12px;
-    padding: 6px 8px;
+    font-size: 18px;
+    padding: 8px 12px;
 }
 
 /* NEW: For showing/hiding individual diagrams and dice */
@@ -882,50 +886,129 @@ body.details-hidden #dice-wrapper {
     background-color: #d32f2f;
 }
 
-/* Intro collapsible styles */
-.intro {
-    background-color: #fff;
-    border-radius: 10px;
-    padding: 18px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-    transition: max-height 0.35s ease, opacity 0.25s ease, padding 0.25s ease;
-    overflow: hidden;
-    max-width: 900px;
-    margin: 0 auto 20px;
-}
-.intro.collapsed {
-    /* Keep a small title-bar visible when collapsed */
-    max-height: 56px;
-    padding: 6px 18px;
-    opacity: 1;
-    border-bottom: 1px solid rgba(0,0,0,0.06);
-    /* Hide all children except the H2 title so the title remains visible/clickable */
-    overflow: hidden;
-}
-.intro.collapsed > :not(h2) {
-    display: none;
-}
-.intro:not(.collapsed) {
-    max-height: 2000px; /* generous value to allow full content */
-    opacity: 1;
+/* Footer Styles */
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+    box-sizing: border-box;
 }
 
-/* Intro toggle button placed above the intro */
-.intro-header {
+body {
+    padding-bottom: 70px; /* Space for footer */
+}
+
+.mobile-view-switch {
     display: flex;
-    justify-content: center;
-    margin: 12px 0 6px;
+    align-items: center;
+    gap: 10px;
 }
-.intro-toggle {
-    background: none;
-    border: none;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    color: #333;
-    padding: 6px 10px;
-    border-radius: 6px;
+
+.switch-label {
+    font-size: 14px;
 }
-.intro-toggle:hover {
-    background-color: rgba(0,0,0,0.03);
+
+/* The switch - a checkbox with a sliding knob */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #4CAF50;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #4CAF50;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+/* Mobile View adjustments */
+body.mobile-view #dice-wrapper {
+    flex-direction: column;
+    align-items: center;
+}
+
+body.mobile-view .die-group {
+    width: 90%;
+    max-width: 400px;
+}
+
+body.mobile-view .diagram-pair-container {
+    /* This already becomes a column on smaller screens, but we can enforce it */
+}
+
+body.mobile-view .fretboard-display {
+    transform: scale(0.9);
+    transform-origin: center;
+}
+
+body.mobile-view .piano-display {
+    transform: scale(0.9);
+    transform-origin: center;
+}
+
+body.mobile-view #play-mode-selectors-container {
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px;
+}
+
+body.mobile-view h2 {
+    font-size: 20px;
 }

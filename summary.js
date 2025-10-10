@@ -86,7 +86,7 @@ function updateStateFromDropdown(label, rawValue) {
 
         newState.currentScaleType = result.name.toLowerCase().includes('minor') ? 'minor' : result.name.toLowerCase().includes('major') ? 'major' : 'modal';
 
-        dom.card2.innerHTML = `<span class="card-name">${result.name}</span><span class="card-intervals">${result.intervals}</span>`;
+        dom.card2.innerHTML = `<span class="card-name">${result.name}</span><span class="card-intervals">${result.intervals}</span>` + (result.commonChords ? `<span class="card-chords">Chords: ${result.commonChords}</span>` : '');
         dom.clearScaleButton.style.display = 'block';
         updateState(newState);
         updateDependentElements();
